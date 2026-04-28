@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mObywatel v5.0 | #void_ptr</title>
+    <style>
+        /* Czcionka dla czystości i nowoczesności */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --bg-dark: #09020e; 
+            --bg-mid: #1c0a27; 
+            --text-light: #ffffff;
+            --text-subtle: #9ba1a6;
+            --glass-fill: rgba(20, 10, 28, 0.65); 
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --border-clear: rgba(150, 0, 255, 0.25); 
+            --accent-purple: #9c27b0; 
+            --accent-glow: rgba(156, 39, 176, 0.4);
+            --shadow-button: rgba(156, 39, 176, 0.3);
+            --error-red: #ff4d4d; 
+            --success-green: #22c55e; 
+            --accent-blue: #3b82f6;
+            --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* --- 4. CUSTOM SCROLLBAR --- */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(156, 39, 176, 0.3);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(156, 39, 176, 0.6);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 15% 10%, rgba(156, 39, 176, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 90%, rgba(59, 130, 246, 0.1) 0%, transparent 40%);
+            background-attachment: fixed;
+            overflow-x: hidden;
+        }
+
+        /* --- 2. KASKADOWE ANIMACJE WEJŚCIOWE --- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            background: linear-gradient(145deg, var(--glass-fill) 0%, rgba(9, 2, 14, 0.8) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            
+            padding: 40px 32px; 
+            border-radius: 24px; 
+            border: 1px solid var(--glass-border);
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.8), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            width: 100%;
+            max-width: 400px; 
+            margin-bottom: 20px; 
+            margin-top: 2vh;
+            animation: fadeInUp 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+        }
+
+        h1 {
+            color: var(--text-light);
+            text-align: center;
+            margin: 0 0 32px 0;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            font-size: 1.75rem;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--accent-purple), transparent);
+            border-radius: 2px;
+        }
+        
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Opóźnienia dla kaskadowej animacji na dzieciach formularza */
+        form > * {
+            opacity: 0;
+            animation: fadeInUp 0.5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+        }
+        .instruction-details { opacity: 0; animation: fadeInUp 0.5s forwards; animation-delay: 0.1s; }
+        form > *:nth-child(1) { animation-delay: 0.15s; }
+        form > *:nth-child(2) { animation-delay: 0.20s; }
+        form > *:nth-child(3) { animation-delay: 0.25s; }
+        form > *:nth-child(4) { animation-delay: 0.30s; }
+        form > *:nth-child(5) { animation-delay: 0.35s; }
+        form > *:nth-child(6) { animation-delay: 0.40s; }
+        form > *:nth-child(7) { animation-delay: 0.45s; }
+        form > *:nth-child(8) { animation-delay: 0.50s; }
+        form > *:nth-child(9) { animation-delay: 0.55s; }
+        form > *:nth-child(10) { animation-delay: 0.60s; }
+        form > *:nth-child(11) { animation-delay: 0.65s; }
+        form > *:nth-child(12) { animation-delay: 0.70s; }
+        form > *:nth-child(13) { animation-delay: 0.75s; }
+        form > *:nth-child(14) { animation-delay: 0.80s; }
+        form > *:nth-child(15) { animation-delay: 0.85s; }
+        form > *:nth-child(16) { animation-delay: 0.90s; }
+        form > *:nth-child(17) { animation-delay: 0.95s; }
+        form > *:nth-child(18) { animation-delay: 1.00s; }
+        form > *:nth-child(19) { animation-delay: 1.05s; }
+        form > *:nth-child(20) { animation-delay: 1.10s; }
+        form > *:nth-child(21) { animation-delay: 1.15s; }
+        form > *:nth-child(22) { animation-delay: 1.20s; }
+
+        /* --- 1. FLOATING LABELS (Pure CSS via :has) --- */
+        .form-group {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group > label {
+            position: absolute;
+            top: 17px;
+            left: 16px;
+            font-size: 1rem;
+            color: var(--text-subtle);
+            pointer-events: none;
+            transition: var(--transition-smooth);
+            transform-origin: left top;
+            text-transform: none;
+            letter-spacing: normal;
+            z-index: 5;
+            font-weight: 400;
+        }
+
+        /* Etykieta przeskakuje na górę gdy pole jest aktywne lub posiada wpisany tekst */
+        .form-group:has(input[type="text"]:focus) > label,
+        .form-group:has(input[type="text"]:not(:placeholder-shown)) > label,
+        .form-group:has(input[type="date"]) > label, 
+        .form-group:has(select) > label {
+            transform: translateY(-10px) scale(0.75);
+            font-weight: 600;
+            color: var(--text-subtle);
+        }
+
+        .form-group:has(input:focus) > label,
+        .form-group:has(select:focus) > label {
+            color: var(--accent-purple) !important;
+        }
+
+        /* Wyjątek dla etykiety od pola Upload (zdjęcie), ona nie powinna pływać */
+        .form-group:has(.file-upload-wrapper) > label {
+            position: relative;
+            top: 0;
+            left: 0;
+            transform: none !important;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            margin-left: 4px;
+            font-weight: 600;
+        }
+
+        input[type="text"], input[type="date"], select {
+            width: 100%;
+            /* Zwiększony padding, żeby zrobić miejsce na pływającą etykietę */
+            padding: 24px 16px 8px 16px;
+            height: 56px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            background-color: rgba(0, 0, 0, 0.25);
+            color: var(--text-light);
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: var(--transition-smooth);
+            -webkit-appearance: none;
+            appearance: none; 
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        input[type="text"]:focus, input[type="date"]:focus, select:focus {
+            border-color: var(--accent-purple);
+            outline: none;
+            background-color: rgba(0, 0, 0, 0.4);
+            box-shadow: 
+                0 0 0 4px rgba(156, 39, 176, 0.15), 
+                inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Ukrywamy placeholder, dopóki użytkownik nie kliknie w pole (żeby nie nachodził na pływającą etykietę) */
+        input[type="text"]::placeholder {
+            color: transparent;
+            transition: color 0.3s ease;
+        }
+        input[type="text"]:focus::placeholder {
+            color: rgba(155, 161, 166, 0.3);
+        }
+        
+        /* --- 3. SUBTELNA WALIDACJA WIZUALNA --- */
+        /* Gdy użytkownik wpisał tekst i spełnia on pattern (np. pesel) */
+        input[type="text"]:not(:placeholder-shown):valid {
+            border-color: rgba(34, 197, 94, 0.5);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 2px rgba(34, 197, 94, 0.1);
+        }
+        /* Gdy użytkownik wpisał tekst i jest BŁĘDNY */
+        input[type="text"]:not(:placeholder-shown):invalid {
+            border-color: rgba(255, 77, 77, 0.5);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2), 0 0 0 2px rgba(255, 77, 77, 0.1);
+        }
+        /* Usuwamy czerwoną obwódkę przy walidacji focusu dla czystości */
+        input[type="text"]:focus:invalid {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 4px rgba(156, 39, 176, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1) opacity(0.7); 
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        input[type="date"]:focus::-webkit-calendar-picker-indicator {
+            filter: invert(1) opacity(1);
+        }
+        
+        .autofill-block {
+            margin: 4px 0 8px 0; 
+            padding: 20px;
+            border-radius: 16px;
+            background: linear-gradient(145deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.02) 100%);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* --- 5. RIPPLE & PRESS EFFECT NA PRZYCISKACH --- */
+        button {
+            position: relative;
+            overflow: hidden; /* Niezbędne do efektu ripple */
+        }
+
+        /* Animacja zapadania się w głąb ekranu */
+        button:active:not([disabled]) {
+            transform: scale(0.96) !important;
+        }
+
+        /* Fala Ripple po kliknięciu */
+        button::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%) scale(0);
+            border-radius: 50%;
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        button:active::after {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            transition: 0s; /* pojawia się natychmiast przy kliknięciu */
+        }
+
+        #autofillButton {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            transition: var(--transition-smooth);
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #2563eb 100%);
+            color: var(--text-light);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        #autofillButton:hover:not([disabled]) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+            filter: brightness(1.1);
+        }
+        
+        #statusMessageAutofill {
+            text-align: center;
+            margin-top: 12px;
+            min-height: 18px; 
+            font-size: 0.8rem;
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        #generateButton {
+            width: 100%;
+            padding: 18px;
+            border: none;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: var(--transition-smooth);
+            margin-top: 10px;
+            background: linear-gradient(135deg, #b026c4 0%, #7c1ba0 100%);
+            color: var(--text-light);
+            box-shadow: 0 6px 20px rgba(156, 39, 176, 0.4);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        #generateButton:hover:not([disabled]) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(156, 39, 176, 0.5);
+            filter: brightness(1.1);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            filter: grayscale(0.5);
+            box-shadow: none;
+            transform: none;
+        }
+        
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            margin: 10px 0;
+            border: none;
+        }
+        
+        /* --- UPLOAD PLIKU --- */
+        .file-upload-wrapper { 
+            position: relative; 
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        #fileInput { 
+            opacity: 0; 
+            position: absolute; 
+            z-index: -1; 
+            width: 0.1px; 
+            height: 0.1px; 
+        }
+        
+        .custom-file-upload { 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%; 
+            padding: 20px; 
+            border: 2px dashed rgba(255, 255, 255, 0.15); 
+            border-radius: 14px; 
+            background-color: rgba(0, 0, 0, 0.2); 
+            color: var(--text-subtle); 
+            cursor: pointer; 
+            transition: var(--transition-smooth); 
+            font-size: 0.95rem; 
+            font-weight: 500;
+        }
+        
+        .custom-file-upload:hover { 
+            border-color: var(--accent-purple); 
+            color: var(--text-light);
+            background-color: rgba(156, 39, 176, 0.05);
+        }
+
+        .image-preview-container { 
+            width: 100%; 
+            height: 0; 
+            opacity: 0; 
+            border-radius: 14px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            overflow: hidden; 
+            cursor: pointer; 
+            transition: var(--transition-smooth); 
+            background: rgba(0,0,0,0.3);
+        }
+
+        .image-preview-container.active { 
+            height: 160px; 
+            opacity: 1; 
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        #imagePreview { 
+            max-width: 100%; 
+            max-height: 100%; 
+            object-fit: contain; 
+            border-radius: 8px; 
+            display: block; 
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+        }
+
+        #statusMessage {
+            text-align: center;
+            min-height: 18px; 
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-top: -10px;
+        }
+
+        /* --- AKORDEON INSTRUKCJA --- */
+        .instruction-details {
+            margin-bottom: 32px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+            transition: var(--transition-smooth);
+        }
+
+        .instruction-details summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            list-style: none;
+            color: var(--text-light);
+            background: linear-gradient(90deg, rgba(255,255,255,0.05) 0%, transparent 100%);
+            transition: var(--transition-smooth);
+        }
+        
+        .instruction-details summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .instruction-details summary:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .instruction-details[open] {
+            background: rgba(0, 0, 0, 0.2);
+            border-color: rgba(156, 39, 176, 0.3);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        .instruction-details[open] summary {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--accent-purple);
+        }
+
+        .instruction-details .icon {
+            font-size: 0.9rem;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            color: var(--text-subtle);
+        }
+
+        .instruction-details[open] .icon {
+            transform: rotate(90deg);
+            color: var(--accent-purple);
+        }
+
+        .instruction-content {
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .instruction-content p {
+            font-size: 0.85rem;
+            color: var(--text-subtle);
+            margin: 0 0 16px 0;
+        }
+
+        .instruction-content strong {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .instruction-content ol {
+            margin: 8px 0 0 0;
+            padding-left: 20px;
+            font-size: 0.85rem;
+            color: var(--text-subtle);
+        }
+
+        .instruction-content li {
+            margin-bottom: 6px;
+        }
+        
+        /* --- STOPKA --- */
+        .footer-dev {
+            text-align: center;
+            padding-top: 20px; 
+            font-size: 0.75rem;
+            color: var(--text-subtle);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .footer-dev span {
+            color: var(--text-light); 
+            font-weight: 800; 
+            font-size: 1.1rem; 
+            letter-spacing: 2px;
+            text-shadow: 0 0 15px rgba(156, 39, 176, 0.6); 
+            transition: var(--transition-smooth);
+        }
+
+        .footer-dev:hover span {
+            text-shadow: 0 0 25px rgba(156, 39, 176, 1);
+            transform: scale(1.05);
+        }
+
+        /* --- RESPONSIVE FIXES --- */
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+                border-radius: 20px;
+                margin-top: 0;
+                box-shadow: none;
+                border-left: none;
+                border-right: none;
+                background: var(--bg-mid);
+            }
+            body {
+                padding: 0;
+                background-image: none; 
+            }
+            input[type="text"], input[type="date"], select {
+                font-size: 16px; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>mObywatel v5.0</h1>
+ <details class="instruction-details">
+            <summary>
+                INSTRUKCJA 
+                <span class="icon">▶</span>
+            </summary>
+            <div class="instruction-content">
+                <p>Aby aplikacja działała jak skrót na pulpicie telefonu (bez paska adresu przeglądarki), postępuj zgodnie z krokami.</p>
+
+                <strong style="counter-reset: step-counter;">System iOS (iPhone): 📱</strong>
+                <ol>
+                    <li>Upewnij się, że używasz przeglądarki Safari.</li>
+                    <li>Uzupełnij dane i kliknij GENERUJ.</li>
+                    <li>Na nowej stronie naciśnij ikonę Udostępnij.</li>
+                    <li>Wybierz opcję Do Ekranu głównego.</li>
+                </ol>
+
+                <strong style="counter-reset: step-counter;">System Android: 🤖</strong>
+                <ol>
+                    <li>Upewnij się, że używasz przeglądarki Chrome lub Google.</li>
+                    <li>Uzupełnij dane i kliknij GENERUJ.</li>
+                    <li>Na nowej stronie naciśnij ikonę Menu (3 kropki) w prawym górnym rogu.</li>
+                    <li>Wybierz opcję Dodaj do ekranu głównego.</li>
+                </ol>
+            </div>
+        </details>
+        <form id="dataGenerator">
+            <div class="form-group">
+                <label for="name">Imię:</label>
+                <input type="text" id="name" name="name" placeholder="Jan" required>
+            </div>
+
+            <div class="form-group">
+                <label for="surname">Nazwisko:</label>
+                <input type="text" id="surname" name="surname" placeholder="Kowalski" required>
+            </div>
+
+            <div class="form-group">
+                <label for="sex">Płeć:</label>
+                <select id="sex" name="sex" required>
+                    <option value="MĘŻCZYZNA">MĘŻCZYZNA</option>
+                    <option value="KOBIETA">KOBIETA</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="birthday">Data Urodzenia (wybierz z kalendarza):</label>
+                <input 
+                    type="date" 
+                    id="birthday" 
+                    name="birthday" 
+                    required 
+                >
+            </div>
+            
+            <div class="autofill-block">
+                <button type="button" id="autofillButton">Wypełnij Daty Automatycznie</button>
+                <div id="statusMessageAutofill"></div> 
+            </div>
+            <div class="form-group">
+                <label for="pesel">Numer PESEL:</label>
+                <input 
+                    type="text" 
+                    id="pesel" 
+                    name="pesel" 
+                    placeholder="11-cyfrowy numer" 
+                    maxlength="11"
+                    pattern="[0-9]{11}" 
+                    required 
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="mdow_series">Seria i numer mDowodu:</label>
+                <input type="text" id="mdow_series" name="mdow_series" placeholder="MWYC XXXXX" required>
+            </div>
+
+            <div class="form-group">
+                <label for="issue_date">Data wydania mDowodu (DD.MM.RRRR):</label>
+                <input 
+                    type="text" 
+                    id="issue_date" 
+                    name="issue_date" 
+                    placeholder="14.07.2023" 
+                    maxlength="10"
+                    pattern="[0-9]{2}\.[0-9]{2}\.[0-9]{4}" 
+                    required 
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="expiry_date">Termin ważności mDowodu (DD.MM.RRRR):</label>
+                <input 
+                    type="text" 
+                    id="expiry_date" 
+                    name="expiry_date" 
+                    placeholder="14.07.2028" 
+                    maxlength="10"
+                    pattern="[0-9]{2}\.[0-9]{2}\.[0-9]{4}" 
+                    required 
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="father_name">Imię ojca:</label>
+                <input type="text" id="father_name" name="father_name" placeholder="Maciej" required>
+            </div>
+
+            <div class="form-group">
+                <label for="mother_name">Imię matki:</label>
+                <input type="text" id="mother_name" name="mother_name" placeholder="Ewa" required>
+            </div>
+
+            <div class="form-group">
+                <label for="nationality">Obywatelstwo:</label>
+                <input type="text" id="nationality" name="nationality" placeholder="POLSKIE" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="birthPlace">Miejsce Urodzenia:</label>
+                <input type="text" id="birthPlace" name="birthPlace" placeholder="Warszawa" required>
+            </div>
+
+             <div class="form-group">
+                <label for="birth_country">Kraj Urodzenia:</label>
+                <input type="text" id="birth_country" name="birth_country" placeholder="Polska" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="adress1">Adres (Ulica i numer):</label>
+                <input type="text" id="adress1" name="adress1" placeholder="Chopina 4/56" required>
+            </div>
+
+            <div class="form-group">
+                <label for="adress2">Kod pocztowy / nr:</label>
+                <input type="text" id="adress2" name="adress2" placeholder="42-250" >
+            </div>
+
+            <div class="form-group">
+                <label for="city">Miasto:</label>
+                <input type="text" id="city" name="city" placeholder="Warszawa" >
+            </div>
+
+            <div class="form-group">
+                <label for="home_date">Data zameldowania (DD.MM.RRRR):</label>
+                <input 
+                    type="text" 
+                    id="home_date" 
+                    name="home_date" 
+                    placeholder="01.01.2000" 
+                    maxlength="10"
+                    pattern="[0-9]{2}\.[0-9]{2}\.[0-9]{4}"
+                    required
+                >
+            </div>
+            
+            <div class="form-group">
+                <label for="family_name">Nazwisko rodowe (Twoje):</label>
+                <input type="text" id="family_name" name="family_name" placeholder="Kowalski / Panieńskie">
+            </div>
+
+            <div class="form-group">
+                <label for="father_family_name">Nazwisko rodowe ojca:</label>
+                <input type="text" id="father_family_name" name="father_family_name" placeholder="Kowalski">
+            </div>
+
+            <div class="form-group">
+                <label for="mother_family_name">Nazwisko rodowe matki:</label>
+                <input type="text" id="mother_family_name" name="mother_family_name" placeholder="Nowak">
+            </div>
+            
+            <div class="divider"></div>
+
+            <div class="form-group">
+                <label for="fileInput">Zdjęcie:</label>
+                <div class="file-upload-wrapper">
+                    <input type="file" id="fileInput" accept="image/jpeg, image/png" required>
+                    
+                    <label for="fileInput" id="fileLabel" class="custom-file-upload">Wybierz plik...</label>
+
+                    <label for="fileInput" class="image-preview-container" id="imagePreviewContainer">
+                        <img id="imagePreview" src="#" alt="Podgląd zdjęcia">
+                    </label>
+
+                    <input type="hidden" id="image" name="image" value="">
+                </div>
+            </div>
+            <div id="statusMessage"></div> 
+            
+            <button type="submit" id="generateButton">/// GENERUJ ///</button>
+            
+            <div class="footer-dev">
+                Made by
+                <span>void_ptr</span>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        // =========================================================
+        //    	       KONFIGURACJA CLOUDINARY - ZMIEŃ TO!
+        // =========================================================
+        const CLOUD_NAME = '';           // <--- ZMIEŃ NA SWÓJ KLUCZ
+        const UPLOAD_PRESET = ''; // <--- ZMIEŃ NA SWÓJ KLUCZ
+        // =========================================================
+        
+        const form = document.getElementById('dataGenerator');
+        const fileInput = document.getElementById('fileInput');
+        const imageURLInput = document.getElementById('image');
+        const fileLabel = document.getElementById('fileLabel');
+        const generateButton = document.getElementById('generateButton');
+        const statusMessage = document.getElementById('statusMessage'); // Status uploadu
+        const statusMessageAutofill = document.getElementById('statusMessageAutofill'); // Status autofill
+        const imagePreview = document.getElementById('imagePreview');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        const autofillButton = document.getElementById('autofillButton');
+        
+        // Pola, które mają być automatycznie wypełniane
+        const peselInput = document.getElementById('pesel');
+        const issueDateInput = document.getElementById('issue_date');
+        const expiryDateInput = document.getElementById('expiry_date');
+        const homeDateInput = document.getElementById('home_date');
+        const birthdayInput = document.getElementById('birthday');
+
+        // Pola daty, które wymagają ręcznej walidacji DD.MM.RRRR (wszystkie oprócz 'birthday')
+        const manualDateFields = [
+            issueDateInput,
+            expiryDateInput,
+            homeDateInput,
+        ];
+        
+        // =========================================================
+        // FUNKCJE POMOCNICZE
+        // =========================================================
+
+        // Konwertuje datę z YYYY-MM-DD (format input type="date") na DD.MM.RRRR
+        function formatDateForDisplay(date) {
+            if (!(date instanceof Date) || isNaN(date)) return '';
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}.${month}.${year}`;
+        }
+        
+        // Funkcja do konwersji daty z formatu YYYY-MM-DD (z input type="date") na DD.MM.RRRR
+        function formatDateForURL(dateString) {
+            if (!dateString) return '';
+            const parts = dateString.split('-'); // [YYYY, MM, DD]
+            return `${parts[2]}.${parts[1]}.${parts[0]}`; // DD.MM.RRRR
+        }
+        
+        // Generuje losowy 5-cyfrowy numer
+        function generateRandomFiveDigits() {
+            return Math.floor(10000 + Math.random() * 90000);
+        }
+
+        // =========================================================
+        // LOGIKA GENEROWANIA DAT I DANYCH (AUTOFILL)
+        // ZMIENIONA: PESEL generowany tak jak w card.js
+        // =========================================================
+        
+        autofillButton.addEventListener('click', function() {
+            const birthDateValue = birthdayInput.value;
+            statusMessageAutofill.style.color = 'var(--error-red)';
+            
+            if (!birthDateValue) {
+                statusMessageAutofill.textContent = 'BŁĄD: Najpierw wybierz Datę Urodzenia z kalendarza!';
+                return;
+            }
+
+            const birthDate = new Date(birthDateValue);
+            const currentYear = new Date().getFullYear();
+            const birthYear = birthDate.getFullYear();
+            const isAdult = currentYear - birthYear >= 18;
+            
+            // --- 1. Generowanie Dat ---
+            let issueDate;
+            
+            if (isAdult) {
+                const adultDate = new Date(birthDate.getTime());
+                adultDate.setFullYear(adultDate.getFullYear() + 18); 
+                
+                issueDate = new Date(adultDate.getTime());
+                issueDate.setDate(issueDate.getDate() + 1); 
+
+                const today = new Date();
+                if (issueDate > today) {
+                    issueDate = new Date(today.getTime()); 
+                }
+                
+            } else {
+                issueDate = new Date(birthDate.getTime());
+                issueDate.setFullYear(issueDate.getFullYear() + 13);
+                issueDate.setDate(issueDate.getDate() + 1); 
+                
+                const today = new Date();
+                if (issueDate > today) {
+                    issueDate = new Date(today.getTime()); 
+                }
+            }
+
+            const expiryDate = new Date(issueDate.getTime());
+            expiryDate.setFullYear(expiryDate.getFullYear() + 5);
+
+            const homeDate = new Date(birthDate.getTime());
+            homeDate.setFullYear(homeDate.getFullYear() + 1);
+            
+            // --- 2. Wypełnianie pól ---
+
+            // PESEL - teraz generujemy tak, jak w card.js (bez losowych fragmentów)
+            const birthMonth = birthDate.getMonth() + 1;
+            const birthDay = birthDate.getDate();
+            const birthYearMod = birthYear % 100;
+            
+            let peselMonth = birthMonth;
+            if (birthYear >= 2000) {
+                peselMonth += 20;
+            }
+            
+            // later zgodnie z card.js: mężczyzna -> 0295, kobieta -> 0382
+            const sexVal = document.getElementById('sex').value;
+            const sexLower = (sexVal || "").toString().toLowerCase();
+            let later = "0295"; // domyślnie mężczyzna
+            if (sexLower.indexOf('kob') !== -1) later = "0382";
+
+            let dayStr = String(birthDay);
+            let monthForPesel = peselMonth;
+            if (birthDay < 10) dayStr = "0" + dayStr;
+            let monthStr = String(monthForPesel);
+            if (monthForPesel < 10) monthStr = "0" + monthStr;
+
+            const generatedPesel = String(birthYearMod).padStart(2, '0') + monthStr + dayStr + later + "7";
+            peselInput.value = generatedPesel.substring(0, 11);
+            
+            document.getElementById('mdow_series').value = `MWYC ${generateRandomFiveDigits()}`;
+            
+            issueDateInput.value = formatDateForDisplay(issueDate);
+            expiryDateInput.value = formatDateForDisplay(expiryDate);
+            homeDateInput.value = formatDateForDisplay(homeDate);
+            
+            statusMessageAutofill.style.color = 'var(--success-green)';
+            statusMessageAutofill.textContent = 'Daty i numery zostały wygenerowane pomyślnie! ✅';
+        });
+
+        // =========================================================
+        // LOGIKA WALIDACJI: Weryfikacja formatu dat i PESEL
+        // =========================================================
+        
+        function validateDateFormat(input) {
+            const datePattern = new RegExp(input.pattern);
+            if (!input.value) return !input.required; 
+            
+            if (input.value.length !== 10 || !datePattern.test(input.value)) {
+                return false;
+            }
+            return true;
+        }
+
+        function validatePeselFormat(input) {
+            const peselPattern = new RegExp(input.pattern);
+            if (!input.value) return !input.required;
+
+            if (input.value.length !== 11 || !peselPattern.test(input.value)) {
+                return false;
+            }
+            return true;
+        }
+
+        // =========================================================
+        // LOGIKA ZDJĘCIA: Podgląd i przesyłanie
+        // =========================================================
+        
+        fileInput.addEventListener('change', function() {
+            statusMessage.textContent = ''; 
+            
+            const file = this.files[0];
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                    imagePreviewContainer.classList.add('active');
+                    fileLabel.style.display = 'none'; 
+                };
+                reader.readAsDataURL(file);
+                
+                imageURLInput.value = ''; 
+                statusMessage.textContent = 'Zdjęcie załadowane!';
+                statusMessage.style.color = 'var(--text-light)';
+            } else {
+                fileLabel.style.display = 'block';
+                imagePreview.style.display = 'none';
+                imagePreviewContainer.classList.remove('active');
+                imageURLInput.value = '';
+                statusMessage.textContent = '';
+            }
+        });
+
+        async function uploadToCloudinary(file) {
+            if (CLOUD_NAME.startsWith('TWÓJ') || UPLOAD_PRESET.startsWith('TWÓJ')) {
+                statusMessage.style.color = 'var(--error-red)';
+                statusMessage.textContent = 'BŁĄD: Zmień CLOUD_NAME i UPLOAD_PRESET w kodzie JS!';
+                return null;
+            }
+
+            statusMessage.style.color = 'var(--text-light)';
+            statusMessage.textContent = 'Ładowanie zdjęcia na Cloudinary... ⏳';
+            generateButton.disabled = true;
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', UPLOAD_PRESET); 
+
+            try {
+                const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.url) {
+                    statusMessage.style.color = 'var(--success-green)';
+                    statusMessage.textContent = 'Zdjęcie załadowane pomyślnie! ✅';
+                    return data.url; 
+                } else {
+                    statusMessage.style.color = 'var(--error-red)';
+                    statusMessage.textContent = 'Błąd Cloudinary: ' + (data.error && data.error.message ? data.error.message : 'Nieznany błąd.');
+                    console.error('Błąd Cloudinary:', data);
+                    return null;
+                }
+            } catch (error) {
+                statusMessage.style.color = 'var(--error-red)';
+                statusMessage.textContent = 'Błąd sieci/API. Sprawdź połączenie i poprawność kluczy Cloudinary.';
+                console.error('Błąd Fetch:', error);
+                return null;
+            } finally {
+                generateButton.disabled = false;
+            }
+        }
+
+        // =========================================================
+        // ZARZĄDZANIE SUBMITEM FORMULARZA
+        // - mapujemy nazwy do tych, których oczekuje card.js
+        // - konwertujemy birthday na DD.MM.RRRR
+        // - wysyłamy sex jako 'm' lub 'k'
+        // - przekierowanie do card.html
+        // =========================================================
+        form.addEventListener('submit', async function(event) {
+            event.preventDefault(); 
+            
+            // 1. Walidacja
+            for (const input of manualDateFields) {
+                if (!validateDateFormat(input)) {
+                    statusMessage.style.color = 'var(--error-red)';
+                    statusMessage.textContent = `BŁĄD: Pole ${input.name.toUpperCase()} musi być w formacie DD.MM.RRRR!`;
+                    input.focus();
+                    return;
+                }
+            }
+
+            if (!validatePeselFormat(peselInput)) {
+                statusMessage.style.color = 'var(--error-red)';
+                statusMessage.textContent = 'BŁĄD: Numer PESEL musi zawierać 11 cyfr!';
+                peselInput.focus();
+                return;
+            }
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                statusMessage.style.color = 'var(--error-red)';
+                statusMessage.textContent = 'Wybierz plik zdjęcia, aby kontynuować!';
+                return;
+            }
+
+            // 2. Przesyłanie zdjęcia (jeśli nie ma linku)
+            if (imageURLInput.value === '') {
+                const imageUrl = await uploadToCloudinary(fileInput.files[0]);
+                
+                if (!imageUrl) {
+                    return; 
+                }
+                
+                imageURLInput.value = imageUrl; 
+            }
+            
+            // 3. Generowanie URL (mapowanie nazw na te, które używa card.js)
+            const nameMap = {
+                family_name: "familyName",
+                father_family_name: "fathersFamilyName",
+                mother_family_name: "mothersFamilyName",
+                birth_country: "countryOfBirth"
+            };
+
+            const params = [];
+            const allInputs = form.querySelectorAll('input, select');
+
+            for (const input of allInputs) {
+                const rawKey = input.name;
+                if (!rawKey) continue;
+                if (rawKey === 'fileInput') continue;
+
+                let value = input.value || "";
+
+                // birthday -> DD.MM.RRRR (card.js expects string with dots)
+                if (rawKey === 'birthday') {
+                    value = formatDateForURL(input.value); // converts YYYY-MM-DD -> DD.MM.YYYY
+                }
+
+                // sex -> card.js expects 'm' or 'k' (lowercase)
+                if (rawKey === 'sex') {
+                    const v = (value || "").toString().toLowerCase();
+                    if (v.indexOf('kob') !== -1 || v.indexOf('k') === 0) {
+                        value = 'k';
+                    } else {
+                        value = 'm';
+                    }
+                }
+
+                // image hidden input: use uploaded Cloudinary url
+                if (rawKey === 'image' && imageURLInput.value) {
+                    value = imageURLInput.value;
+                }
+
+                // map keys like family_name -> familyName etc.
+                const finalKey = nameMap[rawKey] || rawKey;
+
+                // encode and push
+                params.push(`${finalKey}=${encodeURIComponent(value)}`);
+            }
+
+            // redirect do card.html (tak jak chcesz)
+            const targetUrl = `id.html?${params.join('&')}`;
+            window.location.href = targetUrl;
+        });
+    </script>
+
+</body>
+</html>
