@@ -45,6 +45,9 @@ function getMobileOperatingSystem() {
     return 4;
   }
   
-  if (getMobileOperatingSystem() == 2){
-      document.querySelector(".bottom_bar").style.height = "70px"
-}
+    if (getMobileOperatingSystem() == 2){
+        var bottomBar = document.querySelector(".bottom_bar");
+    if (bottomBar) {
+          bottomBar.style.height = "70px";
+      }
+  }
